@@ -1,13 +1,7 @@
 import { Context7Error } from "@error";
 
 type CacheSetting =
-  | "default"
-  | "force-cache"
-  | "no-cache"
-  | "no-store"
-  | "only-if-cached"
-  | "reload"
-  | false;
+  "default" | "force-cache" | "no-cache" | "no-store" | "only-if-cached" | "reload" | false;
 
 export type Context7Request = {
   path?: string[];

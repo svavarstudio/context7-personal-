@@ -1,9 +1,11 @@
 import pc from "picocolors";
-import { checkbox, type Separator } from "@inquirer/prompts";
+import { checkbox } from "@inquirer/prompts";
 import readline from "readline";
 
 type CheckboxConfig<T> = Parameters<typeof checkbox<T>>[0];
-type CheckboxChoice<T> = Exclude<CheckboxConfig<T>["choices"][number], Separator | string>;
+type CheckboxChoice<T> = Extract<CheckboxConfig<T>["choices"][number], { value: T }> & {
+  disabled?: boolean | string;
+};
 
 /**
  * Creates a clickable terminal hyperlink using OSC 8 escape sequence.
@@ -76,7 +78,10 @@ export async function checkboxWithHover<T>(
 ): Promise<T[]> {
   const choices = config.choices.filter(
     (c): c is CheckboxChoice<T> =>
-      typeof c === "object" && c !== null && !("type" in c && c.type === "separator")
+      typeof c === "object" &&
+      c !== null &&
+      "value" in c &&
+      !("type" in c && c.type === "separator")
   );
   const values = choices.map((c) => c.value);
   const totalItems = values.length;

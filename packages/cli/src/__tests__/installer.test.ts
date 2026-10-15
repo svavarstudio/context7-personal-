@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { mkdir, readFile, writeFile, rm, access } from "fs/promises";
-import { join } from "path";
+import { join, resolve } from "path";
 import { tmpdir } from "os";
 
 import { installSkillFiles, symlinkSkill } from "../utils/installer.js";
@@ -72,7 +72,7 @@ describe("isSafeSkillName", () => {
 describe("assertSkillNameInRoot", () => {
   test("returns resolved path for safe name", () => {
     const result = assertSkillNameInRoot("/tmp/skills", "pdf");
-    expect(result).toBe("/tmp/skills/pdf");
+    expect(result).toBe(resolve("/tmp/skills", "pdf"));
   });
 
   test("throws on traversal", () => {
