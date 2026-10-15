@@ -34,15 +34,15 @@
     "zod": ">=4.0.0"
   },
   "devDependencies": {
+    "@ai-sdk/amazon-bedrock": "^4.0.193",
+    "@types/node": "^25.9.9",
     "@upstash/context7-sdk": "workspace:*",
-    "ai": "^6.0.5",
-    "zod": "^4.4.3",
-    "@ai-sdk/amazon-bedrock": "^4.0.9",
-    "@types/node": "^25.0.3",
+    "ai": "^6.0.302",
     "dotenv": "^17.4.2",
     "tsup": "^8.5.1",
-    "typescript": "^5.8.2",
-    "vitest": "^5.0.2"
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3",
+    "zod": "^4.6.5"
   },
   "repository": {
     "type": "git",

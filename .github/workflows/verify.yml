@@ -1,0 +1,35 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24.18.0"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10.33.4"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm lint:check
+      - name: Offline CLI, MCP and Pi tests
+        run: pnpm -r --no-bail --filter ctx7 --filter @upstash/context7-mcp --filter @upstash/context7-pi test
+      - name: Offline SDK HTTP tests
+        run: pnpm --filter @upstash/context7-sdk exec vitest run src/http/index.test.ts
+      - name: Offline AI tool structure tests
+        run: pnpm --filter @upstash/context7-tools-ai-sdk exec vitest run -t "Tool structure|Prompt exports|should create an agent|should accept"

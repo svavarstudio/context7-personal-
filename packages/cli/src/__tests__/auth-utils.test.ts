@@ -1,4 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
+import { join } from "path";
 
 vi.mock("fs", () => {
   const fns = {
@@ -29,16 +30,18 @@ import {
 } from "../utils/auth.js";
 
 const mfs = vi.mocked(fs);
-const CREDENTIALS_PATH = "/fake-home/.config/context7/credentials.json";
-const LEGACY_CREDENTIALS_PATH = "/fake-home/.context7/credentials.json";
-const CONFIG_DIR_PATH = "/fake-home/.config/context7";
+const TEST_HOME = process.platform === "win32" ? "C:\\fake-home" : "/fake-home";
+const CREDENTIALS_PATH = join(TEST_HOME, ".config", "context7", "credentials.json");
+const LEGACY_CREDENTIALS_PATH = join(TEST_HOME, ".context7", "credentials.json");
+const CONFIG_DIR_PATH = join(TEST_HOME, ".config", "context7");
 
 beforeEach(() => {
   vi.clearAllMocks();
   // os.homedir() reads $HOME first on POSIX, so stubbing the env var pins the
   // home directory deterministically without mocking the `os` builtin (which
   // resolves unreliably across Node versions / worker pooling in CI).
-  vi.stubEnv("HOME", "/fake-home");
+  vi.stubEnv("HOME", TEST_HOME);
+  vi.stubEnv("USERPROFILE", TEST_HOME);
   vi.stubEnv("XDG_CONFIG_HOME", undefined);
   vi.stubEnv("XDG_STATE_HOME", undefined);
   vi.stubEnv("XDG_CACHE_HOME", undefined);
@@ -88,12 +91,12 @@ describe("saveTokens", () => {
     mfs.existsSync.mockReturnValue(false);
     saveTokens({ access_token: "tok", token_type: "bearer" });
 
-    expect(mfs.mkdirSync).toHaveBeenCalledWith("/custom-config/context7", {
+    expect(mfs.mkdirSync).toHaveBeenCalledWith(join("/custom-config", "context7"), {
       recursive: true,
       mode: 0o700,
     });
     expect(mfs.writeFileSync).toHaveBeenCalledWith(
-      "/custom-config/context7/credentials.json",
+      join("/custom-config", "context7", "credentials.json"),
       expect.any(String),
       { mode: 0o600 }
     );
